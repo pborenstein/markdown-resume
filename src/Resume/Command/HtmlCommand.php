@@ -35,7 +35,7 @@ class HtmlCommand extends Command
                 'template',
                 't',
                 InputOption::VALUE_REQUIRED,
-                'Which of the templates to use. Use an absolute path for a custom template.'
+                'Which of the templates to use'
             )
             ->addOption(
                 'refresh',
@@ -102,10 +102,6 @@ class HtmlCommand extends Command
             array_push($assets, new FileAsset($fileInfo->getPathname()));
         }
 
-        usort($assets, function (FileAsset $a, FileAsset $b) {
-            return strcmp($a->getSourcePath(), $b->getSourcePath());
-        });
-
         $collection = new AssetCollection(
             $assets
         );
@@ -130,13 +126,7 @@ class HtmlCommand extends Command
         if (!$template) {
             $template = $this->app->defaultTemplate;
         }
-
-        if (strpos($template, DIRECTORY_SEPARATOR) !== false) {
-            $templatePath = realpath($template);
-        } else {
-            $templatePath = join(DIRECTORY_SEPARATOR, array($this->app->templatePath, basename($template)));
-        }
-
+        $templatePath = join(DIRECTORY_SEPARATOR, array($this->app->templatePath, basename($template)));
         $templateIndexPath = join(DIRECTORY_SEPARATOR, array($templatePath, 'index.html'));
 
         if (!file_exists($templateIndexPath)) {
@@ -157,10 +147,15 @@ class HtmlCommand extends Command
         // Construct the title for the html document from the h1 and h2 tags
         $simpleDom = HtmlDomParser::str_get_html($resumeHtml);
         $title = sprintf(
-            '%s | %s',
-            $simpleDom->find('h1', 0)->innertext,
-            $simpleDom->find('h2', 0)->innertext
+            '%s',
+            $simpleDom->find('h1', 0)->innertext
         );
+
+//         $title = sprintf(
+//             '%s | %s',
+//             $simpleDom->find('h1', 0)->innertext,
+//             $simpleDom->find('h2', 0)->innertext
+//         );
 
         // Render the Markdown into an html file with Mustache Templates
         $m = new \Mustache_Engine;
@@ -179,6 +174,7 @@ class HtmlCommand extends Command
     protected function determineOutfile($outputFilename)
     {
         return join(DIRECTORY_SEPARATOR, array($destination, pathinfo($source, PATHINFO_FILENAME) . '.html'));
+
     }
 }
 
