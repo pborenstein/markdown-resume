@@ -148,7 +148,7 @@ class HtmlCommand extends Command
         $simpleDom = HtmlDomParser::str_get_html($resumeHtml);
         $title = sprintf(
             '%s',
-            $simpleDom->find('h1', 0)->innertext
+            $simpleDom->find('h1', 0)->plaintext
         );
 
 //         $title = sprintf(
